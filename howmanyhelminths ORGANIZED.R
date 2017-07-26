@@ -157,9 +157,21 @@ for (i in c(1:length(country.sub))){
 #
 #
 #
-#
-
+# Functional vegan scripts
 
 basemat <- acast(base, X1~X2, value.var="X3",fun=sum)
 basemat <- data.frame(basemat)
 sp1 <- specaccum(basemat)
+summary(sp1)
+plot(sp1)
+
+mod1 <- fitspecaccum(sp1,'lomolino')
+mod2 <- fitspecaccum(sp1,'gleason')
+mod3 <- fitspecaccum(sp1,'asymp')
+mod4 <- fitspecaccum(sp1,'gompertz')
+mod5 <- fitspecaccum(sp1,'michaelis-menten')
+mod6 <- fitspecaccum(sp1,'logis')
+mod7 <- fitspecaccum(sp1,'weibull')
+
+# Many of these crash
+
