@@ -1,8 +1,8 @@
 library(reshape2)
 library(vegan)
 
-load('/Users/Colin/Dropbox/helminths/intMats.RData')
-class(intMats)
+setwd('C:/Users/cjcar/Documents/Github/helminths')
+load('intMats.RData')
 View(data.frame(intMats$Iceland))
 
 base <- data.frame(matrix(nrow=0,ncol=3))
