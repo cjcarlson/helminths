@@ -1,0 +1,358 @@
+---
+title: "Inordinate fondness, insurmountable diversity: the global richness and distribution of helminth biodiversity, remeasured"
+author: "Colin Carlson, Tad Dallas, Anna J. Phillips, Shweta Bansal"
+includes:
+output:
+  pdf_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 6
+    toc: yes
+  html_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 6
+    highlight: tango
+    theme: journal
+---
+
+
+
+
+## Data loading
+
+```{r}
+
+npc <- read.csv('YOFAhosts.csv')
+npc$X <- NULL
+
+```
+
+
+
+
+
+
+## Data pre-processing
+
+```{r}
+
+library(plyr);library(dplyr)
+
+npc2 <- npc %>%
+  group_by(yearone) %>%
+  summarize(parasitesFound = length(unique(nameparse)),
+    hostsFound = sum(hosts, na.rm=TRUE))
+
+
+npc <- npc[order(npc$yearone), ]
+
+```
+
+
+## Support functions
+
+```{r}
+
+Deriv <- function (mod, n = 200, eps = 1e-07, newdata, term){
+    if (inherits(mod, "gamm")) 
+        mod <- mod$gam
+    m.terms <- attr(terms(mod), "term.labels")
+    if (missing(newdata)) {
+        newD <- sapply(model.frame(mod)[, m.terms, drop = FALSE], 
+            function(x) seq(min(x), max(x), length = n))
+        names(newD) <- m.terms
+    }
+    else {
+        newD <- newdata
+    }
+    X0 <- predict(mod, data.frame(newD), type = "lpmatrix")
+    newD <- newD + eps
+    X1 <- predict(mod, data.frame(newD), type = "lpmatrix")
+    Xp <- (X1 - X0)/eps
+    Xp.r <- NROW(Xp)
+    Xp.c <- NCOL(Xp)
+    bs.dims <- sapply(mod$smooth, "[[", "bs.dim") - 1
+    t.labs <- attr(mod$terms, "term.labels")
+    if (!missing(term)) {
+        want <- grep(term, t.labs)
+        if (!identical(length(want), length(term))) 
+            stop("One or more 'term's not found in model!")
+        t.labs <- t.labs[want]
+    }
+    nt <- length(t.labs)
+    lD <- vector(mode = "list", length = nt)
+    names(lD) <- t.labs
+    for (i in seq_len(nt)) {
+        Xi <- Xp * 0
+        want <- grep(t.labs[i], colnames(X1))
+        Xi[, want] <- Xp[, want]
+        df <- Xi %*% coef(mod)
+        df.sd <- rowSums(Xi %*% mod$Vp * Xi)^0.5
+        lD[[i]] <- list(deriv = df, se.deriv = df.sd)
+    }
+    class(lD) <- "Deriv"
+    lD$gamModel <- mod
+    lD$eps <- eps
+    lD$eval <- newD - eps
+    lD
+}
+
+signifD <- function (x, d, upper, lower, eval = 0){
+    miss <- upper > eval & lower < eval
+    incr <- decr <- x
+    want <- d > eval
+    incr[!want | miss] <- NA
+    want <- d < eval
+    decr[!want | miss] <- NA
+    list(incr = incr, decr = decr)
+}
+
+
+confint.Deriv <- function (object, term, alpha = 0.05, ...) 
+{
+    l <- length(object) - 3
+    term.labs <- names(object[seq_len(l)])
+    if (missing(term)) {
+        term <- term.labs
+    }
+    else {
+        term <- term.labs[match(term, term.labs)]
+    }
+    if (any(miss <- is.na(term))) 
+        stop(paste("'term'", term[miss], "not a valid model term."))
+    res <- vector(mode = "list", length = length(term))
+    names(res) <- term
+    residual.df <- df.residual(object$gamModel)
+    tVal <- qt(1 - (alpha/2), residual.df)
+    for (i in term) {
+        upr <- object[[i]]$deriv + tVal * object[[i]]$se.deriv
+        lwr <- object[[i]]$deriv - tVal * object[[i]]$se.deriv
+        res[[i]] <- list(upper = drop(upr), lower = drop(lwr))
+    }
+    res$alpha = alpha
+    res
+}
+
+
+```
+
+
+
+
+
+
+## Model fitting
+
+```{r}
+
+ctrl <- list(niterEM = 0, msVerbose = TRUE, optimMethod="L-BFGS-B")
+mod <- gamm(hosts ~ s(yearone, bs = "cc", k = 12),
+  data = npc, correlation = corARMA(form = ~ 1|yearone, p = 2),
+  control = ctrl)
+
+
+want <- seq(1, nrow(npc), length.out = 200)
+pdat <- with(npc,
+             data.frame(hosts = hosts[want], yearone = yearone[want])
+  )
+
+p2 <- predict(mod$gam, newdata = pdat, type = "terms", se.fit = TRUE)
+pdat <- transform(pdat, p2 = p2$fit[,1], se2 = p2$se.fit[,1])
+
+df.res <- df.residual(mod$gam)
+crit.t <- qt(0.025, df.res, lower.tail = FALSE)
+pdat <- transform(pdat,
+  upper = p2 + (crit.t * se2),
+  lower = p2 - (crit.t * se2))
+
+```
+
+
+```{r}
+
+summary(mod$gam)
+
+plot(mod$gam, scale = 0)
+
+pacf(resid(mod$lme), lag.max = 36, main = "pACF")
+
+```
+
+
+
+
+
+
+```{r}
+
+mod.d <- Deriv(mod)
+mod.dci <- confint(mod.d, term = "yearone")
+mod.dsig <- signifD(pdat$p2, d = mod.d[["yearone"]]$deriv,
+  mod.dci[["yearone"]]$upper, mod.dci[["yearone"]]$lower)
+
+
+
+pdf('gamPlot.pdf')
+ylim <- with(pdat, range(upper, lower, p2))
+par(mar=c(4,4,0.5,0.5))
+plot(p2 ~ yearone, data = pdat, type = "n", 
+  ylab = "Host species", ylim = ylim, las=1, 
+  xlab = "Year of first acquisition")
+lines(p2 ~ yearone, data = pdat)
+lines(upper ~ yearone, data = pdat, lty = "dashed")
+lines(lower ~ yearone, data = pdat, lty = "dashed")
+lines(unlist(mod.dsig$incr) ~ yearone, data = pdat, col = "blue", lwd = 3)
+lines(unlist(mod.dsig$decr) ~ yearone, data = pdat, col = "red", lwd = 3)
+dev.off()
+
+
+
+pdf('gamPlot2.pdf')
+npcF <- filter(npc, !is.na(hosts))
+plot(hosts - mean(hosts) ~ yearone, data = npcF, 
+  type = "n", las=1,
+  ylab = "Host species")
+points(hosts - mean(hosts) ~ yearone, data = npcF,
+       col = "lightgrey", pch = 16, cex = 0.7)
+lines(p2 ~ yearone, data = pdat)
+lines(upper ~ yearone, data = pdat, lty = "dashed")
+lines(lower ~ yearone, data = pdat, lty = "dashed")
+lines(unlist(mod.dsig$incr) ~ yearone, 
+  data = pdat, col = "blue", lwd = 3)
+lines(unlist(mod.dsig$decr) ~ yearone, 
+  data = pdat, col = "red", lwd = 3)
+dev.off()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Code from the blog post
+
+```{r}
+
+ctrl <- list(niterEM = 0, msVerbose = TRUE, optimMethod="L-BFGS-B")
+m2 <- gamm(Temperature ~ s(nMonth, bs = "cc", k = 12) + s(Time, k = 20),
+  data = cet, correlation = corARMA(form = ~ 1|Year, p = 2),
+  control = ctrl)
+
+want <- seq(1, nrow(cet), length.out = 200)
+pdat <- with(cet,
+             data.frame(Time = Time[want], Date = Date[want],
+                        nMonth = nMonth[want]))
+p2 <- predict(m2$gam, newdata = pdat, type = "terms", se.fit = TRUE)
+pdat <- transform(pdat, p2 = p2$fit[,2], se2 = p2$se.fit[,2])
+
+df.res <- df.residual(m2$gam)
+crit.t <- qt(0.025, df.res, lower.tail = FALSE)
+pdat <- transform(pdat,
+  upper = p2 + (crit.t * se2),
+  lower = p2 - (crit.t * se2))
+
+
+
+
+
+
+
+
+X0 <- predict(mod, newDF, type = "lpmatrix")
+newDF <- newDF + eps
+X1 <- predict(mod, newDF, type = "lpmatrix")
+Xp <- (X1 - X0) / eps
+
+
+
+
+for(i in seq_len(nt)) {
+  Xi <- Xp * 0
+  want <- grep(t.labs[i], colnames(X1))
+  Xi[, want] <- Xp[, want]
+  df <- Xi %*% coef(mod)    # derivatives
+  df.sd <- rowSums(Xi %*% mod$Vp * Xi)^.5
+  lD[[i]] <- list(deriv = df, se.deriv = df.sd)
+}
+
+
+
+Term <- "Time"
+m2.d <- Deriv(m2)
+m2.dci <- confint(m2.d, term = Term)
+m2.dsig <- signifD(pdat$p2, d = m2.d[[Term]]$deriv,
+  m2.dci[[Term]]$upper, m2.dci[[Term]]$lower)
+
+
+
+
+
+ylim <- with(pdat, range(upper, lower, p2))
+ylab <- expression(Temperature ~ (degree*C * ":" ~ centred))
+
+plot(p2 ~ Date, data = pdat, type = "n", ylab = ylab, ylim = ylim)
+lines(p2 ~ Date, data = pdat)
+lines(upper ~ Date, data = pdat, lty = "dashed")
+lines(lower ~ Date, data = pdat, lty = "dashed")
+lines(unlist(m2.dsig$incr) ~ Date, data = pdat, col = "blue", lwd = 3)
+lines(unlist(m2.dsig$decr) ~ Date, data = pdat, col = "red", lwd = 3)
+
+
+
+
+
+plot(Temperature - mean(Temperature) ~ Date, data = cet, type = "n",
+     ylab = ylab)
+points(Temperature - mean(Temperature) ~ Date, data = cet,
+       col = "lightgrey", pch = 16, cex = 0.7)
+lines(p2 ~ Date, data = pdat)
+lines(upper ~ Date, data = pdat, lty = "dashed")
+lines(lower ~ Date, data = pdat, lty = "dashed")
+lines(unlist(m2.dsig$incr) ~ Date, data = pdat, col = "blue", lwd = 3)
+lines(unlist(m2.dsig$decr) ~ Date, data = pdat, col = "red", lwd = 3)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
