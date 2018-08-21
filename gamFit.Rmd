@@ -42,7 +42,7 @@ library(plyr);library(dplyr)
 npc2 <- npc %>%
   group_by(yearone) %>%
   summarize(parasitesFound = length(unique(nameparse)),
-    hostsFound = sum(hosts, na.rm=TRUE))
+    hostsFound = mean(hosts, na.rm=TRUE))
 
 
 npc <- npc[order(npc$yearone), ]
@@ -147,9 +147,14 @@ confint.Deriv <- function (object, term, alpha = 0.05, ...)
 ```{r}
 
 ctrl <- list(niterEM = 0, msVerbose = TRUE, optimMethod="L-BFGS-B")
-mod <- gamm(hosts ~ s(yearone, bs = "cc", k = 12),
+mod <- gamm(hosts ~ s(yearone, bs = "cc", k = 10),
   data = npc, correlation = corARMA(form = ~ 1|yearone, p = 2),
   control = ctrl)
+# gam.check(mod)
+cmod <- gamm(hosts ~ s(yearone, bs = "cc", k = 10),
+  data = npc, 
+  control = ctrl)
+lmod <- lm(hosts ~ yearone, data=npc)
 
 
 want <- seq(1, nrow(npc), length.out = 200)
