@@ -114,7 +114,7 @@ associations <- associations[sps[,2]==TRUE,]
 
 
 
-
+library(taxize)
 
 classifier <- function(name) { 
   name2 <- tryCatch(gnr_resolve(name, best_match_only = TRUE)$matched_name,error=function(e) {NULL})
@@ -126,6 +126,9 @@ classifier <- function(name) {
       ids <- ids[[1]]
       ids <- as.numeric(as.character(ids))
       x <- classification(ids, db = 'itis')[[1]]
+      if(is.na(classification(ids, db = 'itis')[[1]])) {
+        return(c(name2,NA))
+      }
       if(nrow(x)==1) {
         ids <- tryCatch(synonyms(ids,db='itis')[[1]]$acc_tsn[1], error=function(e) {NA})
         if(is.na(ids)) {
@@ -158,6 +161,9 @@ for(i in 1:nrow(dictionary)){
 
 write.csv(dictionary,'dictionary.csv')
 write.csv(associations,'associations uncleaned.csv')
+
+# THIS IS SUPER SLOW! It takes forever. I ran it on a cluster and you should too, if you decide to reproduce this
+# Also 
 
 ## dictionary <- read.csv('~/Github/helminths/Data/dictionary.csv')
 
