@@ -3,6 +3,7 @@
 Authors: Colin J. Carlson, Anna J. Phillips, Tad Dallas, Laura W. Alexander
 In preparation
 
+```
 SCRIPT DIRECTORY
 |
 |---Data processing
@@ -16,3 +17,4 @@ SCRIPT DIRECTORY
 |     |---03 - Rate of description.R
 |     |---04 - Body size over time.R
 |     |---05 - Host specificity over time.R	
+```
