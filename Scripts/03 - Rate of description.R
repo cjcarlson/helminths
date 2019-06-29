@@ -72,9 +72,9 @@ axis(side = 4, cex.axis=1)
 mtext(side = 4, line = 3, 'Cumulative total species described')
 
 
-lfit <- lm(cumsum.nhm ~ year, data = totals)
+lfit <- lm(cumsum.nhm ~ 0 + year, data = totals)
 sfit <- segmented(lfit, seg.Z = ~ year)
-summary(sfit)
+summary(sfit); pscore.test(sfit, ~year)
 lines(totals$year,fitted(sfit),col='red',lwd=3.5,lty=2)
 
 
@@ -94,8 +94,9 @@ axis(side = 4, cex.axis=1)
 mtext(side = 1, line = 2.5, 'Year')
 mtext(side = 4, line = 3, 'Cumulative total species collected')
 
-lfit <- lm(cumsum.npc ~ year, data = totals)
+lfit <- lm(cumsum.npc ~ 0 + year, data = totals)
 sfit <- segmented(lfit, seg.Z = ~ year)
+summary(sfit); pscore.test(sfit, ~year)
 lines(totals$year[!is.na(totals$freq.npc)],fitted(sfit),col='red',lwd=3.5,lty=2)
 
 
