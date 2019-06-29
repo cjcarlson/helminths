@@ -165,10 +165,11 @@ write.csv(associations,'associations uncleaned.csv')
 # THIS IS SUPER SLOW! It takes forever. I ran it on a cluster and you should too, if you decide to reproduce this
 # Also 
 
-## dictionary <- read.csv('~/Github/helminths/Data/dictionary.csv')
+dictionary <- read.csv('~/Github/helminths/Data/dictionary.csv',
+                       stringsAsFactors = FALSE)[,-1]
 
-# associations <- read.csv('~/Github/helminths/Data/associations uncleaned.csv',
-#                         stringsAsFactors = FALSE)[,-1]
+associations <- read.csv('~/Github/helminths/Data/associations uncleaned.csv',
+                       stringsAsFactors = FALSE)[,-1]
 
 
 associations$hostgroup <- NA
