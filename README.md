@@ -13,8 +13,8 @@ SCRIPT DIRECTORY
 |     |---02 - NPC processing.R
 |
 |---Analysis 
-|     |
-|     |---03 - Rate of description.R
-|     |---04 - Body size over time.R
-|     |---05 - Host specificity over time.R	
+      |
+      |---03 - Rate of description.R
+      |---04 - Body size over time.R
+      |---05 - Host specificity over time.R	
 ```
