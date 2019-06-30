@@ -28,13 +28,17 @@ generalism$hostgroup <- as.character(generalism$hostgroup)
 generalism[generalism$hostgroup %in% c("Chondrostei", "Holostei", "Cladistei", "Teleostei"),]$hostgroup <- "Osteichthys" 
 
 
+hostpar <- associations[,c('Host','Parasite')]
+hostpar <- unique(hostpar)
+thostpar <- table(hostpar$Parasite)
 genera$hs <- 0
 
+
+#  genera$hs[i] <- sum(generalism[generalism$Parasite==genera$Parasite[i],]$Freq)
+
 for (i in 1:nrow(genera)) {
-  
-  genera$hs[i] <- sum(generalism[generalism$Parasite==genera$Parasite[i],]$Freq)
+  genera$hs[i] <- thostpar[genera$Parasite[i]][[1]]
   print(i)
-  
 }
 
 genera$year <- as.numeric(genera$year)
