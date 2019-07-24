@@ -2,7 +2,7 @@ library(segmented)
 
 npc <- read.csv('~/Github/helminths/Data/timeseries_NPC.csv',
                 stringsAsFactor=FALSE)[,-1]
-nhm <- read.csv('~/Github/helminths/Data/timeseries_NHM.csv',
+nhm <- read.csv('~/Github/helminths/Data/timeseries_NHM_v2.csv',
                 stringsAsFactor=FALSE)[,-1]
 
 npc.df <- data.frame(table(npc$yearone))

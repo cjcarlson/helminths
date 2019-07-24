@@ -1,7 +1,7 @@
 
 library(pspline)
 
-genera <- read.csv('~/Github/helminths/Data/timeseries_NHM.csv',
+genera <- read.csv('~/Github/helminths/Data/timeseries_NHM_v2.csv',
                    stringsAsFactors = FALSE)[,-1]
 
 

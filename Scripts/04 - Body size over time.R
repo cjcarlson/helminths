@@ -2,7 +2,7 @@ library(mgcv)
 library(tidyverse)
 library(pspline)
 
-associations <- read.csv('~/Github/helminths/Data/associations cleaned.csv',
+associations <- read.csv('~/Github/helminths/Data/associations cleaned v2.csv',
                          stringsAsFactors = FALSE)
 associations <- associations[,-1]
 
@@ -32,7 +32,7 @@ response1 <- predict(MyGAM1, type="response", se.fit=T)
 
 ################################################
 
-pantheria <- read.csv('~/Github/helminths/Data/helminths/pantheria.csv')
+pantheria <- read.csv('~/Github/helminths/Data/pantheria.csv')
 pantheria <- pantheria[,c(6,8)]
 names(pantheria) <- c('Host','Bodymass')
 

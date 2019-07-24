@@ -1,6 +1,6 @@
 library(plyr)
 
-associations <- read.csv('~/Github/helminths/Data/associations cleaned.csv')
+associations <- read.csv('~/Github/helminths/Data/associations cleaned v2.csv')
 associations <- associations[,-1]
 
 associations$genus <- ''
@@ -18,7 +18,7 @@ associations$genus[i] <- gsub(" ","",x[1])
 print(i)
 }
 
-genera <- unique(associations[,c(2,7,8)])
+genera <- unique(associations[,c('Parasite','genus','year')])
 
 
 
