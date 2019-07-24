@@ -1,6 +1,6 @@
 library(plyr)
 
-associations <- read.csv('~/Github/helminths/Data/associations cleaned.csv')
+associations <- read.csv('~/Github/helminths/Data/associations cleaned v2.csv')
 associations <- associations[,-1]
 
 associations$genus <- ''
@@ -73,4 +73,4 @@ for (i in 1:length(genlist)) {
   }
 }
 
-write.csv(genera,'~/Github/helminths/Data/timeseries_NHM.csv')
+write.csv(genera,'~/Github/helminths/Data/timeseries_NHM_v2.csv')
