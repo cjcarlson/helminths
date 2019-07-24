@@ -2,7 +2,7 @@ library(segmented)
 
 npc <- read.csv('~/Github/helminths/Data/timeseries_NPC.csv',
                 stringsAsFactor=FALSE)[,-1]
-nhm <- read.csv('~/Github/helminths/Data/timeseries_NHM_v2.csv',
+nhm <- read.csv('~/Github/helminths/Data/timeseries_NHM.csv',
                 stringsAsFactor=FALSE)[,-1]
 
 npc.df <- data.frame(table(npc$yearone))
@@ -77,7 +77,7 @@ sfit <- segmented(lfit, seg.Z = ~ year)
 summary(sfit); pscore.test(sfit, ~year)
 lines(totals$year,fitted(sfit),col='red',lwd=3.5,lty=2)
 
-
+nhm.rate <- slope(sfit)$year[2,1]
 
 par(mar=c(4,5,0,5))
 with(totals,
@@ -99,5 +99,6 @@ sfit <- segmented(lfit, seg.Z = ~ year)
 summary(sfit); pscore.test(sfit, ~year)
 lines(totals$year[!is.na(totals$freq.npc)],fitted(sfit),col='red',lwd=3.5,lty=2)
 
+npc.rate <- slope(sfit)$year[2,1]
 
 
