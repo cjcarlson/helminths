@@ -186,6 +186,21 @@ sum(est.a.fake,
     est.t.fake)
 
 
+### TABLE MAKER
+
+
+df <- data.frame(chon=c(est.a.con,est.c.con,est.n.con,est.t.con),
+                 oste=c(est.a.ost,est.c.ost,est.n.ost,est.t.ost),
+                 amph=c(est.a.amp,est.c.amp,est.n.amp,est.t.amp),
+                 rept=c(est.a.rep,est.c.rep,est.n.rep,est.t.rep),
+                 aves=c(est.a.ave,est.c.ave,est.n.ave,est.t.ave),
+                 mamm=c(est.a.mam,est.c.mam,est.n.mam,est.t.mam),
+                 tot=c(acan.corr, cest.corr, nema.corr, trem.corr))
+df <- round(df)
+df[5,] <- colSums(df)
+
+
+
 
 #################### 
 
@@ -219,6 +234,9 @@ round(100*length(unique(rownames(trem.df[trem.df$Amphibia==1,])))/est.t.amp)
 round(100*length(unique(rownames(trem.df[trem.df$Reptilia==1,])))/est.t.rep)
 round(100*length(unique(rownames(trem.df[trem.df$Aves==1,])))/est.t.ave)
 round(100*length(unique(rownames(trem.df[trem.df$Mammalia==1,])))/est.t.mam)
+
+
+
 
 
 round(100*(length(unique(rownames(acan.df[acan.df$Chondrichthyes==1,])))+
@@ -294,3 +312,5 @@ known.nhm/true.total
 
 (total.cryptic-13426) * (1/npc.rate)
 (total.cryptic-known.nhm) * (1/nhm.rate)
+
+
