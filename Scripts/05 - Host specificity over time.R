@@ -8,20 +8,13 @@ genera <- read.csv('~/Github/helminths/Data/timeseries_NHM_v2.csv',
 
 genera.sub <- genera[!genera$first=='exclude',]
 #boxplot(log(hs) ~ first, data=genera.sub)
-summary(aov(hs~as.factor(first)+Error(as.factor(genus)), data = genera.sub))
-kruskal.test(hs~as.factor(first), data = genera.sub)
-wilcox.test(hs~as.factor(first), data=genera.sub)
-
-
 # genera
 
 gen.omit <- na.omit(genera.sub)
 gen.omit <- gen.omit[!(gen.omit$hs==0),]
 gen.omit$loghs <- log(gen.omit$hs)
 
-
 summary(aov(hs~as.factor(first)+Error(as.factor(genus)), data = gen.omit))
-kruskal.test(hs~as.factor(first), data = gen.omit)
 wilcox.test(hs~as.factor(first), data=gen.omit)
 
 #plot(gen.omit$loghs ~ gen.omit$year, pch=16, xlab='year', ylab='log(host specificity)')
