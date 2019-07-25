@@ -10,7 +10,6 @@ genera.sub <- genera[!genera$first=='exclude',]
 #boxplot(log(hs) ~ first, data=genera.sub)
 summary(aov(hs~as.factor(first)+Error(as.factor(genus)), data = genera.sub))
 kruskal.test(hs~as.factor(first), data = genera.sub)
-
 wilcox.test(hs~as.factor(first), data=genera.sub)
 
 

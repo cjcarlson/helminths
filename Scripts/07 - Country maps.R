@@ -209,6 +209,9 @@ iso$helm.undesc <- round((iso$helminths-iso$helm.known)/(iso$helminths)*100)
 #writeOGR(sp, dsn='.', layer='helminths2.shp', driver='ESRI Shapefile')
 #save.image("C:/Users/cjcar/Dropbox/HowManyHelminths2019/Maps workspace backup.RData")
 
+
+setwd('~/Github/helminths/Figures')
+
 g1 <- ggplot(data = iso) +
   geom_sf(aes(fill = helm.undesc)) + coord_sf(datum = NA) +
   scale_fill_viridis_c(option = "plasma") + 
