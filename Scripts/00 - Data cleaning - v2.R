@@ -1,5 +1,5 @@
 
-load("C:/Users/cjcar/Downloads/nhmByParasite.RData")
+load("C:/Users/cjcar/Documents/GitHub/helminths/Data/nhmByParasite.RData")
 names(groupDF)[1] <- 'Parasite'
 helmDF <- dplyr::left_join(helmDF, groupDF, by='Parasite')
 

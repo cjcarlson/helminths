@@ -1,9 +1,9 @@
-load("C:/Users/cjcar/Downloads/nhmByParasite.RData")
+load("C:/Users/cjcar/Documents/Github/helminths/Data/nhmByParasite.RData")
 helmDF <- unique(helmDF[,1:2])
 
 library(plyr)
 
-associations <- read.csv('~/Github/helminths/Data/associations cleaned.csv')
+associations <- read.csv('~/Github/helminths/Data/associations cleaned v2.csv')
 associations <- unique(associations[,2:3])
 
 h1 <- data.frame(table(helmDF$Parasite))
