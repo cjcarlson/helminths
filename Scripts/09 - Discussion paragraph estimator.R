@@ -23,7 +23,7 @@ all.data$hostgroup[all.data$hostgroup=='Cladistei'] <- 'Osteichthyes'
 all.data$hostgroup[all.data$hostgroup=='Teleostei'] <- 'Osteichthyes'
 
 
-cest.df <- all.data[all.data$group=='Cestodes',c('Parasite','hostgroup')]
+cest.df <- all.data[all.data$group=='Nematodes',c('Parasite','hostgroup')]
 cest.df$value =1 
 cest.df <- unique(na.omit(cest.df))
 cest.df <- acast(cest.df , Parasite ~ hostgroup)
@@ -31,17 +31,17 @@ cest.df[is.na(cest.df)] <- 0
 cest.df <- cest.df[,c('Amphibia', 'Aves','Mammalia','Reptilia','Osteichthyes','Chondrichthyes')] # ADD FISH BACK - BUT > 2 FISH GROUPS CURRENTLY
 cest.df <- cest.df[rowSums(cest.df)>0,]
 
-all.data %>% filter(group=='Cestodes') %>% filter(hostgroup=='Amphibia') %>% 
+all.data %>% filter(group=='Nematodes') %>% filter(hostgroup=='Amphibia') %>% 
   select(Host, Parasite) %>% data.frame() %>% unique() -> cest.amph
-all.data %>% filter(group=='Cestodes') %>% filter(hostgroup=='Aves') %>% 
+all.data %>% filter(group=='Nematodes') %>% filter(hostgroup=='Aves') %>% 
   select(Host, Parasite) %>% data.frame() %>% unique() -> cest.aves
-all.data %>% filter(group=='Cestodes') %>% filter(hostgroup=='Mammalia') %>% 
+all.data %>% filter(group=='Nematodes') %>% filter(hostgroup=='Mammalia') %>% 
   select(Host, Parasite) %>% data.frame() %>% unique() -> cest.mamm
-all.data %>% filter(group=='Cestodes') %>% filter(hostgroup=='Reptilia') %>% 
+all.data %>% filter(group=='Nematodes') %>% filter(hostgroup=='Reptilia') %>% 
   select(Host, Parasite) %>% data.frame() %>% unique() -> cest.rept
-all.data %>% filter(group=='Cestodes') %>% filter(hostgroup=='Osteichthyes') %>% 
+all.data %>% filter(group=='Nematodes') %>% filter(hostgroup=='Osteichthyes') %>% 
   select(Host, Parasite) %>% data.frame() %>% unique() -> cest.oste
-all.data %>% filter(group=='Cestodes') %>% filter(hostgroup=='Chondrichthyes') %>% 
+all.data %>% filter(group=='Nematodes') %>% filter(hostgroup=='Chondrichthyes') %>% 
   select(Host, Parasite) %>% data.frame() %>% unique() -> cest.chon
 
 est.c.amp <- copredict(cest.amph, n=7302, iter=100)
