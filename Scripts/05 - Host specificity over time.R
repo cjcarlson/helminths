@@ -1,4 +1,5 @@
 
+library(mgcv)
 library(pspline)
 
 genera <- read.csv('~/Github/helminths/Data/timeseries_NHM_v2.csv',
@@ -26,7 +27,7 @@ summary(MyGAM1)
 #     xlab = "year", ylab = "log(host specificity)")
 
 
-yofa <- read.csv('C:/Users/cjcar/Dropbox/helminths/YOFA hosts.csv')
+yofa <- read.csv('~/Github/helminths/Data/timeseries_NPC.csv')
 MyGAM0 <- gam(hosts ~ s(yearone), family=nb, data=yofa)
 
 #lines(spec, residuals=F, se=TRUE,pch=19, cex=0.75, scheme=0, shade=F, col='blue', xlab = "year", ylab = "log(host specificity)", add=TRUE)
@@ -40,10 +41,10 @@ layout(matrix(c(1,2,2,3), 1, 3, byrow = TRUE),
 
 
 par(mar=c(5,5,2,3))
-boxplot(log(hs) ~ first, data=genera.sub, ylab='log(host specificity)', xlab='', bty="n", 
+boxplot(log(hs) ~ first, data=genera.sub, ylab='log(host range)', xlab='', bty="n", 
         col=c('#e9a3c9','#a1d76a'), cex.lab=1.4, cex.axis=1.4)
 
-plot(0, type="n", bty="n", main="", xlab="Year", ylab="host specificity", lwd=3, ylim=c(0,50), xlim=c(1700,2045),
+plot(0, type="n", bty="n", main="", xlab="Year", ylab="host range", lwd=3, ylim=c(0,50), xlim=c(1700,2045),
      cex.lab=1.4, cex.axis=1.4)
 legend("topright", bty="n", lwd=3, col=c("#998ec3","#f1a340"), legend=c("NHM", "USNPC"),
        cex=1.4)
